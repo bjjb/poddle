@@ -1,0 +1,5 @@
+{
+  "*.js": { "type": "script", "alternate": "{}.test.js" },
+  "*.test.js": { "type": "test", "alternate": "{}.js" },
+  "*.css": { "type": "stylesheet" }
+}

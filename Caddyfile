@@ -1,0 +1,13 @@
+localhost:2015
+bind 0.0.0.0
+
+rewrite {
+  if {file} not test.html
+  r .*
+  ext !.css !.js !.ico !.png !.jpg !.m4a !.ogg !.opus
+  to /index.html
+}
+
+log stdout
+gzip
+root .
