@@ -1,0 +1,4 @@
+.*.sw?
+poddle
+app/*.ogg
+coverage.out

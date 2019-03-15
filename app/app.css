@@ -1,0 +1,9 @@
+.poddle.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-areas: "main";
+}
+
+main[hidden] {
+  display: none;
+}

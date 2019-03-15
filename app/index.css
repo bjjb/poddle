@@ -1,0 +1,13 @@
+@import url('./app.css');
+@import url('./search.css');
+@import url('./feed.css');
+
+:root {
+  font-family: 'Segoe UI', 'Lucida Grande', Ubuntu, sans-serif;
+}
+
+body.poddle.app {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
