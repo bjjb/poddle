@@ -23,6 +23,8 @@ export default class App extends HTMLBodyElement {
 
     addEventListener('popstate', this)
     addEventListener('search:result:clicked', this)
+    addEventListener('feed:item:clicked', this)
+    addEventListener('feed:back:clicked', this)
     addEventListener('search:done', this)
   }
 
@@ -31,7 +33,7 @@ export default class App extends HTMLBodyElement {
   }
 
   handleEvent(event) {
-    const { type } = event
+    const { type, detail } = event
     switch (type) {
       case 'popstate':
         this.route(location)
@@ -40,12 +42,18 @@ export default class App extends HTMLBodyElement {
         history.pushState(location.toString(), 'Search', this.search.location)
         break
       case 'search:result:clicked':
-        const { detail } = event
         this.search.hidden = true
         this.feed.hidden = false
         this.feed.url = detail
         history.pushState({ url: detail }, 'Podcast', this.feed.location)
         this.feed.load()
+        break
+      case 'feed:item:clicked':
+        this.audio.hidden = false
+        this.audio.url = detail
+        break
+      case 'feed:back:clicked':
+        history.back()
         break
       default:
         console.warn('unexpected event: %o', event)

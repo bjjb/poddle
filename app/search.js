@@ -1,16 +1,6 @@
 import { get } from './api.js'
 
 /**
- * Searches on iTunes Podcasts for 'term', and returns the results.
- */
-export async function podcasts(term) {
-  if (!term.trim()) throw new Error('missing search term')
-  const uri = new URL('https://itunes.apple.com/search?entity=podcast')
-  uri.searchParams.set('term', term)
-  return await get(uri).then(r => r.json()).then(r => r.results)
-}
-
-/**
  * Custom <input type='search'> for a search Form input, which automatically
  * enables/disables itself on online/offline.
  */
@@ -91,6 +81,55 @@ class Results extends HTMLOListElement {
 customElements.define('search-results', Results, { extends: 'ol' })
 
 /**
+ * An img tag containing the result's artwork.
+ */
+class Artwork extends HTMLImageElement {
+  constructor(src) {
+    super()
+    this.classList.add('artwork')
+    this.src = src
+  }
+}
+
+customElements.define('artwork-image', Artwork, { extends: 'img' })
+
+/**
+ * An element containing text.
+ */
+class TextElement extends HTMLElement {
+  constructor(text) {
+    super()
+    this.textContent = text
+  }
+}
+
+customElements.define('text-element', TextElement)
+
+/**
+ * The primary text in a result
+ */
+class Primary extends TextElement {
+  constructor(text) {
+    super(text)
+    this.classList.add('primary')
+  }
+}
+
+customElements.define('primary-text', Primary)
+
+/**
+ * The secondary text in a result
+ */
+class Secondary extends TextElement {
+  constructor(text) {
+    super(text)
+    this.classList.add('secondary')
+  }
+}
+
+customElements.define('secondary-text', Secondary)
+
+/**
  * A custom <a> to hold a search result item, which should have the following
  * attributes:
  *
@@ -108,25 +147,15 @@ class Result extends HTMLAnchorElement {
   constructor({ id, primary, secondary, href, artwork }) {
     super()
 
+    this.id = id
+    this.href = href
+
     this.classList.add('search', 'result')
 
-    this.artwork = document.createElement('img')
-    this.artwork.classList.add('artwork')
-    this.artwork.src = artwork
-    this.append(this.artwork)
-
-    this.primary = document.createElement('span')
-    this.primary.classList.add('primary')
-    this.primary.innerText = primary
-    this.append(this.primary)
-
-    this.secondary = document.createElement('span')
-    this.secondary.classList.add('secondary')
-    this.secondary.innerText = secondary
-    this.append(this.secondary)
-
-    this.href = href
-    this.id = id
+    this.artwork = new Artwork(artwork)
+    this.primary = new Primary(primary)
+    this.secondary = new Secondary(secondary)
+    this.append(this.artwork, this.primary, this.secondary)
 
     this.addEventListener('click', this)
   }
@@ -137,6 +166,7 @@ class Result extends HTMLAnchorElement {
       case 'click':
         event.preventDefault()
         const detail = this.href
+        console.debug('Result clicked: %o', detail)
         dispatchEvent(new CustomEvent('search:result:clicked', { detail }))
         break
       default:
@@ -228,10 +258,8 @@ export default class Main extends HTMLElement {
   }
 
   async submit(fireEvent = true) {
-    if (!this.term) {
-      this.results.clear()
-      return
-    }
+    if (!this.term)
+      return this.results.clear()
     this.classList.add('working')
     this.results.set(await this.search(this.term))
     const detail = this.term

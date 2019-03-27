@@ -30,9 +30,9 @@
   display: none;
 }
 
-.feed .items {
+.feed.items {
   list-style: none;
-  margin: 0;
+  margin: 0 0 2em;
   padding: 0;
   background: linear-gradient(rgba(255, 255, 255, 0.99),
                               rgba(255, 255, 255, 0.9) 40%,
@@ -40,23 +40,23 @@
   text-shadow: 0 0 0.1em white;
 }
 
-.feed .items li {
+.feed.items li {
 }
 
-.feed .item {
+.feed.item {
   text-decoration: none;
   color: inherit;
   display: block;
   padding: 1em 0.5em;
 }
 
-.feed .item .title {
+.feed.item .title {
   padding: 0;
   display: block;
   font-weight: bold;
 }
 
-.feed .item .date {
+.feed.item .date {
   display: block;
   font-weight: lighter;
   padding: 0;

@@ -42,18 +42,19 @@ ol.search.results {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  flex: 1
+  flex: 1;
+}
+
+ol.search.results li:last-of-type {
+  margin-bottom: 4em;
 }
 
 ol.search.results:empty {
   display: none;
 }
 
-li.search.result {
-  width: 12em;
-}
-
 a.search.result {
+  width: 12em;
   color: inherit;
   text-decoration: none;
   display: flex;
@@ -78,7 +79,8 @@ a.search.result:active img {
   box-shadow: 0 0 2em rgba(0, 0, 0, 0.1);
 }
 
-a.search.result span {
+a.search.result .primary,
+a.search.result .secondary {
   width: 100%;
   text-align: center;
   padding: 0.2em 1em;

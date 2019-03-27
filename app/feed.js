@@ -24,12 +24,9 @@ function parse(xml) {
   return { title, summary, description, owner, image, items }
 }
 
-async function load(url) {
+async function fetch(url) {
   if (url) {
-    const detail = url
-    dispatchEvent(new CustomEvent('poddle:feed:loading', { detail }))
     const result = await get(url).then(r => r.text()).then(xml => parse(xml))
-    dispatchEvent(new CustomEvent('poddle:feed:loaded', { detail }))
     return result
   }
 }
@@ -42,13 +39,13 @@ class Item extends HTMLAnchorElement {
 
     let e = document.createElement('span')
     e.classList.add('item', 'title')
-    e.innerText = title
+    e.innerHTML = title
     this.append(e)
 
     e = document.createElement('time')
     e.classList.add('item', 'date')
     e.setAttribute('datetime', pubDate.toISOString())
-    e.innerText = pubDate.toLocaleString()
+    e.textContent = pubDate.toDateString()
     this.append(e)
 
     this.id = guid
@@ -61,9 +58,9 @@ class Item extends HTMLAnchorElement {
     const { target, type } = event
     switch (type) {
       case 'click':
-        event.preventDefault()
         const detail = this.href
-        dispatchEvent(new CustomEvent('poddle:item:clicked', { detail }))
+        event.preventDefault()
+        dispatchEvent(new CustomEvent('feed:item:clicked', { detail }))
         break
       default:
         console.warn('unknown event: %o', event)
@@ -116,7 +113,7 @@ Nav.Button = class extends HTMLElement {
     switch(type) {
       case 'click':
         const detail = this.name
-        dispatchEvent(new CustomEvent(`nav:button:clicked`), { detail })
+        dispatchEvent(new CustomEvent(`feed:back:clicked`), { detail })
         break
       default:
         console.error(`unexpected event: ${type}: %o`, event)
@@ -153,7 +150,7 @@ export class Header extends HTMLElement {
 customElements.define('feed-header', Header, { extends: 'header' })
 
 export default class Main extends HTMLElement {
-  constructor(url) {
+  constructor(fetch = Main.fetch) {
     super()
 
     this.classList.add('feed')
@@ -167,11 +164,11 @@ export default class Main extends HTMLElement {
     this.list = new Items()
     this.append(this.list)
 
-    this.url = url
+    this.fetch = fetch.bind(this)
   }
 
   async load(fireEvent = true) {
-    const properties = await load(this.url)
+    const properties = await this.fetch(this.url)
     Object.assign(this, properties)
   }
 
@@ -265,6 +262,10 @@ export default class Main extends HTMLElement {
 
   static get observedAttributes() {
     return ['url', 'image']
+  }
+
+  static fetch(url) {
+    return fetch(url)
   }
 }
 
