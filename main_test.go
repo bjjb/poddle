@@ -35,12 +35,12 @@ func Test_cors(t *testing.T) {
 				t.Fatalf("expected %q, got %q", "http://foo.co", v)
 			}
 			v = resp.Header.Get("Access-Control-Allow-Methods")
-			if v != AllowMethods.String() {
-				t.Fatalf("expected %q, got %q", AllowMethods.String(), v)
+			if v != AllowedCORSMethods.Join() {
+				t.Fatalf("expected %q, got %q", AllowedCORSMethods.Join(), v)
 			}
 			v = resp.Header.Get("Access-Control-Allow-Headers")
-			if v != AllowHeaders.String() {
-				t.Fatalf("expected %q, got %q", AllowHeaders.String(), v)
+			if v != AllowedCORSHeaders.Join() {
+				t.Fatalf("expected %q, got %q", AllowedCORSHeaders.Join(), v)
 			}
 		})
 	}

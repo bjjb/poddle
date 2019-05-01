@@ -17,7 +17,8 @@ function parse(xml) {
     let title, pubDate, guid, enclosure
     title = item.querySelector('title').textContent
     pubDate = new Date(item.querySelector('pubDate').textContent)
-    guid = item.querySelector('guid').textContent
+    guid = item.querySelector('guid')
+    if (guid) guid = guid.textContent
     enclosure = item.querySelector('enclosure').getAttribute('url')
     return { title, pubDate, guid, enclosure }
   })
