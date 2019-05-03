@@ -1,0 +1,47 @@
+{
+  "resultCount": 1,
+  "results": [
+    {
+      "wrapperType": "track",
+      "kind": "podcast",
+      "collectionId": 1364825229,
+      "trackId": 1364825229,
+      "artistName": "EvenMoreNews",
+      "collectionName": "Even More News",
+      "trackName": "Even More News",
+      "collectionCensoredName": "Even More News",
+      "trackCensoredName": "Even More News",
+      "collectionViewUrl": "https://podcasts.apple.com/us/podcast/even-more-news/id1364825229?uo=4",
+      "feedUrl": "http://evenmorenews.libsyn.com/rss",
+      "trackViewUrl": "https://podcasts.apple.com/us/podcast/even-more-news/id1364825229?uo=4",
+      "artworkUrl30": "https://is4-ssl.mzstatic.com/image/thumb/Music123/v4/33/be/a2/33bea209-d730-bd36-2b2c-d59615b7d0ec/source/30x30bb.jpg",
+      "artworkUrl60": "https://is4-ssl.mzstatic.com/image/thumb/Music123/v4/33/be/a2/33bea209-d730-bd36-2b2c-d59615b7d0ec/source/60x60bb.jpg",
+      "artworkUrl100": "https://is4-ssl.mzstatic.com/image/thumb/Music123/v4/33/be/a2/33bea209-d730-bd36-2b2c-d59615b7d0ec/source/100x100bb.jpg",
+      "collectionPrice": 0,
+      "trackPrice": 0,
+      "trackRentalPrice": 0,
+      "collectionHdPrice": 0,
+      "trackHdPrice": 0,
+      "trackHdRentalPrice": 0,
+      "releaseDate": "2019-04-25T16:19:00Z",
+      "collectionExplicitness": "cleaned",
+      "trackExplicitness": "cleaned",
+      "trackCount": 55,
+      "country": "USA",
+      "currency": "USD",
+      "primaryGenreName": "News & Politics",
+      "contentAdvisoryRating": "Clean",
+      "artworkUrl600": "https://is4-ssl.mzstatic.com/image/thumb/Music123/v4/33/be/a2/33bea209-d730-bd36-2b2c-d59615b7d0ec/source/600x600bb.jpg",
+      "genreIds": [
+        "1311",
+        "26",
+        "1303"
+      ],
+      "genres": [
+        "News & Politics",
+        "Podcasts",
+        "Comedy"
+      ]
+    }
+  ]
+}
