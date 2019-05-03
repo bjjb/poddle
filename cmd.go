@@ -11,14 +11,8 @@ var cmd = &cobra.Command{
 	},
 }
 
-var startCmd = &cobra.Command{
-	Use:   "start",
-	Short: "start a server",
-	Long:  `Start a web server to serve the Poddle API and app.`,
-	Run: func(c *cobra.Command, args []string) {
-	},
-}
-
 func init() {
-	cmd.AddCommand(startCmd)
+	cmd.PersistentFlags().StringP("database", "D", "sqlite3::memory:", "database DSN")
+	cmd.PersistentFlags().String("ffmpeg-path", "ffmpeg", "path to an ffmpeg executable")
+	cmd.PersistentFlags().String("search-backend", "itunes", "preferred search backend")
 }

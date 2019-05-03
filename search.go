@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/spf13/cobra"
 )
 
 type searcher interface {
@@ -14,6 +16,14 @@ type searcher interface {
 }
 
 type iTunesSearcher struct{}
+
+var searchCmd = &cobra.Command{
+	Use:   "search",
+	Short: "Search for a podcast",
+	Long:  `Search for a podcast matching the given query.`,
+	Run: func(c *cobra.Command, args []string) {
+	},
+}
 
 func (s *iTunesSearcher) newRequest(q string) (*http.Request, error) {
 	if q == "" {
@@ -78,4 +88,8 @@ func (s *iTunesSearcher) parseResponse(r *http.Response) ([]*Podcast, error) {
 		})
 	}
 	return podcasts, nil
+}
+
+func init() {
+	cmd.AddCommand(searchCmd)
 }

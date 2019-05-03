@@ -7,7 +7,17 @@ import (
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/spf13/cobra"
 )
+
+// A Server can start a configured http.Server.
+type Server struct {
+	Handler                                             http.Handler
+	ReadTimeout, WriteTimeout, IdleTimeout, WaitTimeout time.Duration
+	Addr, TLSCertFile, TLSKeyFile                       string
+	Logger                                              *log.Logger
+}
 
 // IdleTimeout is the length of time a server will remain idle before closing
 var IdleTimeout = time.Second * 60
@@ -24,12 +34,23 @@ var WaitTimeout = WriteTimeout * 2
 // Handler is the default handler
 var Handler *http.ServeMux
 
-// A Server can start a configured http.Server.
-type Server struct {
-	Handler                                             http.Handler
-	ReadTimeout, WriteTimeout, IdleTimeout, WaitTimeout time.Duration
-	Addr, TLSCertFile, TLSKeyFile                       string
-	Logger                                              *log.Logger
+// Addr is the default address unless TLS is used
+var Addr = ":8080"
+
+// WebRoot is the directory from which to serve static files by default
+var WebRoot = "app"
+
+var serverCmd = &cobra.Command{
+	Use:   "server",
+	Short: "Start a server",
+	Long: `Start a web server to serve the Poddle API and app.
+
+The server will serve TLS if you specify a cert and key. You can specify
+static files to be served by specifying a web root. To enable persistence in
+the API, set a data source name, which must be either an SQLite3 database or a
+PostreSQL database URL.`,
+	Run: func(c *cobra.Command, args []string) {
+	},
 }
 
 // Start starts the server. It will use the configured Addr, and timeouts, or
@@ -130,7 +151,7 @@ func (s *Server) TLSConfig() (tlsOn bool, tlsCertFile, tlsKeyFile, addr string) 
 	tlsKeyFile = f(s.TLSKeyFile, "", "TLS_KEY_FILE")
 
 	if addr, found = os.LookupEnv("ADDR"); !found {
-		addr = ":80"
+		addr = Addr
 		if tlsOn = tlsCertFile != "" && tlsKeyFile != ""; tlsOn {
 			addr = ":443"
 		}
@@ -140,4 +161,15 @@ func (s *Server) TLSConfig() (tlsOn bool, tlsCertFile, tlsKeyFile, addr string) 
 
 func init() {
 	Handler = &http.ServeMux{}
+
+	serverCmd.Flags().StringP("addr", "a", Addr, "bind address")
+	serverCmd.PersistentFlags().StringP("web-root", "d", WebRoot, "static file directory")
+	serverCmd.Flags().String("tls-cert", "", "TLS cert file")
+	serverCmd.Flags().String("tls-key", "", "TLS key file")
+	serverCmd.Flags().Duration("idle-timeout", IdleTimeout, "idle timeout")
+	serverCmd.Flags().Duration("wait-timeout", WaitTimeout, "wait timeout")
+	serverCmd.Flags().Duration("read-timeout", ReadTimeout, "read timeout")
+	serverCmd.Flags().Duration("write-timeout", WriteTimeout, "write timeout")
+
+	cmd.AddCommand(serverCmd)
 }
