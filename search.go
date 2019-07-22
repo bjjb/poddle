@@ -5,27 +5,84 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 )
 
-type searcher interface {
-	newRequest(string) (*http.Request, error)
-	parseResponse(*http.Response) ([]*Podcast, error)
+// A Searcher can be used to configure how to search for podcasts.
+type Searcher interface {
+	NewRequest(string) (*http.Request, error)
+	ParseResponse(*http.Response) ([]*Podcast, error)
 }
 
 type iTunesSearcher struct{}
+
+var defaultSearcher Searcher
+
+var defaultSearchClient *SearchClient
+
+// A SearchClient can search for podcasts.
+type SearchClient struct {
+	Searcher Searcher
+	Client   *http.Client
+}
 
 var searchCmd = &cobra.Command{
 	Use:   "search",
 	Short: "Search for a podcast",
 	Long:  `Search for a podcast matching the given query.`,
 	Run: func(c *cobra.Command, args []string) {
+		if args == nil || len(args) < 1 {
+			fmt.Fprintf(c.OutOrStderr(), "Missing search query\n")
+			return
+		}
+		podcasts, err := defaultSearchClient.Search(strings.Join(args, " "))
+		if err != nil {
+			fmt.Fprintf(c.OutOrStderr(), "Error: %q", err)
+		}
+		for _, p := range podcasts {
+			if p.URL == "" {
+				continue
+			}
+			fmt.Fprintf(c.OutOrStdout(), "%s [%s]\n", p.Title, p.URL)
+		}
 	},
 }
 
-func (s *iTunesSearcher) newRequest(q string) (*http.Request, error) {
+// Search performs a search for podcasts.
+func (sc *SearchClient) Search(q string) ([]*Podcast, error) {
+	s := sc.Searcher
+	c := sc.Client
+
+	if c == nil {
+		c = &http.Client{}
+	}
+
+	if s == nil {
+		s = defaultSearcher
+	}
+
+	req, err := s.NewRequest(q)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	results, err := s.ParseResponse(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func (s *iTunesSearcher) NewRequest(q string) (*http.Request, error) {
 	if q == "" {
 		return nil, fmt.Errorf("q cannot be blank")
 	}
@@ -41,7 +98,7 @@ func (s *iTunesSearcher) newRequest(q string) (*http.Request, error) {
 	return req, nil
 }
 
-func (s *iTunesSearcher) parseResponse(r *http.Response) ([]*Podcast, error) {
+func (s *iTunesSearcher) ParseResponse(r *http.Response) ([]*Podcast, error) {
 	if r.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("search returned %d (%s)", r.StatusCode, r.Status)
 	}
@@ -91,5 +148,7 @@ func (s *iTunesSearcher) parseResponse(r *http.Response) ([]*Podcast, error) {
 }
 
 func init() {
+	defaultSearcher = &iTunesSearcher{}
+	defaultSearchClient = &SearchClient{}
 	cmd.AddCommand(searchCmd)
 }

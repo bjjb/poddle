@@ -28,7 +28,7 @@ func TestSearch(t *testing.T) {
 				{"l" + strTimes("o", 256) + "ng", "", "q cannot be longer than 255 characters"},
 			} {
 				t.Run(tc.q, func(t *testing.T) {
-					req, err := s.newRequest(tc.q)
+					req, err := s.NewRequest(tc.q)
 					if tc.err != "" {
 						if err == nil || err.Error() != tc.err {
 							t.Fatalf("expected error %q, got %q", tc.err, err)
@@ -67,7 +67,7 @@ func TestSearch(t *testing.T) {
 						}`
 					body := ioutil.NopCloser(strings.NewReader(json))
 					resp := &http.Response{StatusCode: 200, Body: body}
-					results, err := s.parseResponse(resp)
+					results, err := s.ParseResponse(resp)
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -92,14 +92,14 @@ func TestSearch(t *testing.T) {
 				})
 			})
 			t.Run("400", func(t *testing.T) {
-				_, err := s.parseResponse(&http.Response{StatusCode: 414})
+				_, err := s.ParseResponse(&http.Response{StatusCode: 414})
 				if err == nil {
 					t.Fatal("expected an error, not none")
 				}
 			})
 			t.Run("invalid JSON", func(t *testing.T) {
 				body := ioutil.NopCloser(strings.NewReader("invalid JSON"))
-				_, err := s.parseResponse(&http.Response{StatusCode: 200, Body: body})
+				_, err := s.ParseResponse(&http.Response{StatusCode: 200, Body: body})
 				if err == nil {
 					t.Fatal("expected an error, not none")
 				}

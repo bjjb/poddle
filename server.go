@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -40,6 +41,12 @@ var Addr = ":8080"
 // WebRoot is the directory from which to serve static files by default
 var WebRoot = "app"
 
+// TLSCert is the location of a TLS cert file
+var TLSCert = ""
+
+// TLSKey is the location of a TLS key file
+var TLSKey = ""
+
 var serverCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Start a server",
@@ -50,6 +57,7 @@ static files to be served by specifying a web root. To enable persistence in
 the API, set a data source name, which must be either an SQLite3 database or a
 PostreSQL database URL.`,
 	Run: func(c *cobra.Command, args []string) {
+		fmt.Println(WebRoot)
 	},
 }
 
@@ -162,14 +170,14 @@ func (s *Server) TLSConfig() (tlsOn bool, tlsCertFile, tlsKeyFile, addr string) 
 func init() {
 	Handler = &http.ServeMux{}
 
-	serverCmd.Flags().StringP("addr", "a", Addr, "bind address")
-	serverCmd.PersistentFlags().StringP("web-root", "d", WebRoot, "static file directory")
-	serverCmd.Flags().String("tls-cert", "", "TLS cert file")
-	serverCmd.Flags().String("tls-key", "", "TLS key file")
-	serverCmd.Flags().Duration("idle-timeout", IdleTimeout, "idle timeout")
-	serverCmd.Flags().Duration("wait-timeout", WaitTimeout, "wait timeout")
-	serverCmd.Flags().Duration("read-timeout", ReadTimeout, "read timeout")
-	serverCmd.Flags().Duration("write-timeout", WriteTimeout, "write timeout")
+	serverCmd.Flags().StringVarP(&Addr, "addr", "a", Addr, "bind address")
+	serverCmd.PersistentFlags().StringVarP(&WebRoot, "web-root", "d", WebRoot, "static file directory")
+	serverCmd.Flags().StringVar(&TLSCert, "tls-cert", TLSCert, "TLS cert file")
+	serverCmd.Flags().StringVar(&TLSKey, "tls-key", TLSKey, "TLS key file")
+	serverCmd.Flags().DurationVar(&IdleTimeout, "idle-timeout", IdleTimeout, "idle timeout")
+	serverCmd.Flags().DurationVar(&WaitTimeout, "wait-timeout", WaitTimeout, "wait timeout")
+	serverCmd.Flags().DurationVar(&ReadTimeout, "read-timeout", ReadTimeout, "read timeout")
+	serverCmd.Flags().DurationVar(&WriteTimeout, "write-timeout", WriteTimeout, "write timeout")
 
 	cmd.AddCommand(serverCmd)
 }
