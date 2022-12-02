@@ -1,0 +1,11 @@
+image: golang:1.17.7-alpine3.15
+
+pipelines:
+  default:
+  - step:
+      name: Test
+      script:
+      - CGO_ENABLED=0 go test
+
+options:
+  docker: true
